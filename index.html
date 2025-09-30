@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arm Control System UI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="title">Arm Control System</div>
+      </header>
+
+      <div class="grid">
+        <section class="card">
+          <h2>Motor Channels (0–255)</h2>
+          <div id="gauges"></div>
+        </section>
+
+        <section class="card">
+          <h2>Packets</h2>
+          <div class="latest" id="latest">—</div>
+          <div style="margin: 6px 0 8px 0; font-size: 12px">
+            Format: <code>A_Elbow_WristR_WristL_Claw_Sh1_Sh2</code>
+          </div>
+          <div class="log" id="log" aria-live="polite"></div>
+        </section>
+      </div>
+      <div id="status" class="status">
+        <span>●</span><b id="slabel">Disconnected</b>
+      </div>
+    </div>
+  </body>
+</html>
