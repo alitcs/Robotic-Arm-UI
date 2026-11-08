@@ -1,0 +1,3 @@
+[build]
+  command = "mkdir -p dist && cp index.html styles.css script.js dist/"
+  publish = "dist"

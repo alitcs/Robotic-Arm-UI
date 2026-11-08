@@ -3,34 +3,101 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Arm Control System UI</title>
+    <meta name="theme-color" content="#f5a8c3" />
+    <title>Arm Control System</title>
     <link rel="stylesheet" href="styles.css" />
     <script defer src="script.js"></script>
   </head>
   <body>
+    <div class="cursor-glow" aria-hidden="true"></div>
     <div class="wrap">
-      <header>
-        <div class="title">Arm Control System</div>
+      <header class="topbar">
+        <div class="brand"><div><span class="eyebrow">ROBOTICS / CONTROL INTERFACE</span><h1>Arm Control <span>System.</span></h1></div></div>
+        <div class="top-actions">
+          <div id="status" class="status" role="status"><span class="status-dot" aria-hidden="true"></span><b id="slabel">Simulated data</b></div>
+          <fieldset class="mode-options"><legend class="sr-only">Connection mode</legend>
+            <label><input type="radio" name="connection" value="demo" checked /><span>Demo</span></label>
+            <label><input type="radio" name="connection" value="local" /><span>Local backend</span></label>
+          </fieldset>
+        </div>
       </header>
 
-      <div class="grid">
-        <section class="card">
-          <h2>Motor Channels (0–255)</h2>
-          <div id="gauges"></div>
-        </section>
+      <main>
+        <div class="dashboard">
+          <section class="panel visual-panel" aria-labelledby="visual-title">
+            <div class="panel-heading"><div><span class="eyebrow">01 / MOVEMENT STUDY</span><h2 id="visual-title">Meet the arm<span class="accent">.</span></h2></div><span class="tag">LIVE VIEW <span class="tag-dot"></span></span></div>
+            <div class="arm-stage">
+              <div class="arm-shadow" aria-hidden="true"></div>
+              <div id="arm" class="arm-scene" role="img" aria-label="Three-dimensional robotic arm visualization. Movement illustrates command values, not the physical arm's position.">
+                <div class="arm-world">
+                  <div class="solid base"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div>
+                  <div class="solid pedestal"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div>
+                  <div class="shoulder-pivot">
+                    <div class="joint shoulder-joint"></div>
+                    <div class="solid upper-arm"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div>
+                    <div class="elbow-pivot">
+                      <div class="joint elbow-joint"></div>
+                      <div class="solid forearm"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div>
+                      <div class="wrist-pivot">
+                        <div class="joint wrist-joint"></div>
+                        <div class="solid wrist-body"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div>
+                        <div class="claw-finger finger-left"><div class="solid finger"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div></div>
+                        <div class="claw-finger finger-right"><div class="solid finger"><i class="front"></i><i class="back"></i><i class="left"></i><i class="right"></i><i class="top"></i><i class="bottom"></i></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="stage-badge"><span class="stage-badge-dot"></span><span id="arm-state">ALL CHANNELS NEUTRAL</span></div>
+              <div class="motion-label" id="motion-label" aria-live="polite">WAITING FOR MOVEMENT</div>
+            </div>
+            <p class="panel-note">Illustrative motion from command values, not actual arm position.</p>
+          </section>
 
-        <section class="card">
-          <h2>Packets</h2>
-          <div class="latest" id="latest">—</div>
-          <div style="margin: 6px 0 8px 0; font-size: 12px">
-            Format: <code>A_Elbow_WristR_WristL_Claw_Sh1_Sh2</code>
+          <section class="panel channels-panel" aria-labelledby="channels-title">
+            <div class="panel-heading"><div><span class="eyebrow">02 / MOTOR OUTPUT</span><h2 id="channels-title">Live values<span class="accent">.</span></h2></div><span class="tag">0 — 255</span></div>
+            <div class="monitor-legend"><span>CHANNEL</span><span>OUTPUT / 128 NEUTRAL</span><span>VALUE</span></div>
+            <div id="gauges"></div>
+            <div class="panel-footer"><span><span class="foot-dot"></span> SIX MOTOR CHANNELS</span><span>01 — 06</span></div>
+          </section>
+
+          <section class="panel packets-panel" aria-labelledby="packets-title">
+            <div class="panel-heading"><div><span class="eyebrow">03 / DATA STREAM</span><h2 id="packets-title">Packets<span class="accent">.</span></h2></div><span class="tag">LIVE LOG</span></div>
+            <div class="field-label">LATEST PACKET <span aria-hidden="true">↗</span></div>
+            <div class="latest" id="latest">—</div>
+            <div class="packet-format">A / ELBOW / WRIST R / WRIST L / CLAW / SH 1 / SH 2</div>
+            <div class="field-label history-heading"><span>PACKET HISTORY <span id="packet-count">/ 0</span></span><button type="button" class="clear-log" id="clear-log">Clear log <span aria-hidden="true">↗</span></button></div>
+            <div class="log" id="log" aria-label="Packet history"></div>
+            <div class="panel-footer"><span><span class="foot-dot"></span> INCOMING DATA</span><span>LAST 150 PACKETS</span></div>
+          </section>
+        </div>
+
+        <section class="controls panel" aria-labelledby="controls-title">
+          <div class="controls-head"><div><span class="eyebrow">04 / TAKE CONTROL</span><h2 id="controls-title">Make a move<span class="accent">.</span></h2></div><p id="demo-disclaimer">SIMULATION ONLY <span> / </span> NO ROBOT CONNECTED</p></div>
+          <div id="demo-controls">
+            <div class="control-layout">
+              <div class="key-guide">
+                <div class="guide-card" data-guide="wrist"><span class="guide-label">01 / WRIST</span><strong>NO MODIFIER</strong><p>↑/↓ up / down<br />←/→ rotate CCW / CW</p></div>
+                <div class="guide-card" data-guide="shoulder"><span class="guide-label">02 / SHOULDER</span><strong>HOLD SHIFT</strong><p>↑/↓ forward / back<br />←/→ rotate CCW / CW</p></div>
+                <div class="guide-card" data-guide="elbow"><span class="guide-label">03 / ELBOW + CLAW</span><strong>HOLD CTRL</strong><p>↑/↓ elbow up / down<br />←/→ claw close / open</p></div>
+              </div>
+              <div class="button-controls">
+                <div class="button-heading"><label for="demo-mode">BUTTON MOTOR GROUP <span aria-hidden="true">↗</span></label><select id="demo-mode"><option value="wrist">Wrist</option><option value="shoulder">Shoulder</option><option value="elbow">Elbow + claw</option></select></div>
+                <div class="buttons" aria-label="Simulated controls">
+                  <button type="button" class="command-button" data-key="w"><kbd aria-label="Up arrow">↑</kbd><span>Wrist up</span></button>
+                  <button type="button" class="command-button" data-key="a"><kbd aria-label="Left arrow">←</kbd><span>Rotate counterclockwise</span></button>
+                  <button type="button" class="command-button" data-key="s"><kbd aria-label="Down arrow">↓</kbd><span>Wrist down</span></button>
+                  <button type="button" class="command-button" data-key="d"><kbd aria-label="Right arrow">→</kbd><span>Rotate clockwise</span></button>
+                </div>
+                <p class="interaction-note" id="interaction-note">ARROW KEYS READY / WRIST MODE</p>
+                <p class="keyboard-hint">Use arrows with Shift or Ctrl, or choose a group for the buttons. Move focus outside the dropdown to control the arm with keys.</p>
+              </div>
+            </div>
           </div>
-          <div class="log" id="log" aria-live="polite"></div>
+          <div id="local-help" class="local-help" hidden><p>Run the Python backend and focus its PyGame window. The original controls are W/A/S/D, with Shift for shoulder or Ctrl for elbow and claw; the dashboard only receives packets.</p><code>python backendsender.py</code><p>The server sends a packet when a channel changes. Move a motor to see your first packet.</p></div>
         </section>
-      </div>
-      <div id="status" class="status">
-        <span>●</span><b id="slabel">Disconnected</b>
-      </div>
+      </main>
+      <footer><span>PYTHON + PYGAME <span>→</span> WEBSOCKET <span>→</span> BROWSER</span><span>BUILT TO MOVE</span></footer>
     </div>
   </body>
 </html>
